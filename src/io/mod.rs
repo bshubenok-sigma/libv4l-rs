@@ -65,9 +65,7 @@ impl<B, S> Queue<B, S> {
             type_: self.buf_type as u32,
             memory: memory as u32,
             count,
-            capabilities: 0,
-            reserved: [0],
-            // ..unsafe { mem::zeroed() }
+            ..unsafe { mem::zeroed() }
         };
 
         unsafe {
@@ -268,7 +266,8 @@ impl Queue<Mmap<'_>, queue::Idle> {
 
                 slice::from_raw_parts_mut::<u8>(ptr as *mut u8, v4l2_buf.length as usize)
             };
-
+            mapping.fill(0);
+            queue.qbuf(&mut v4l2_buf)?;
             queue.bufs.push(Mmap(mapping));
         }
 
